@@ -18,6 +18,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -90,7 +91,7 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest request){
-        log.info("로그인 시도 : userId={}", request.getUserId());
+        log.info("로그인 시도 : userId={} ", request.getUserId());
 
 
         try {
@@ -144,5 +145,8 @@ public class AuthService {
             throw new IllegalArgumentException("이미 사용중인 닉네임입니다.");
         }
     }
+
+
+
 
 }

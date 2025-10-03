@@ -12,7 +12,7 @@ import java.util.List;
 
 
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 @Getter
 @Setter
 @Builder
@@ -75,11 +75,23 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        //관리자는 항상 잠금 해제
-        if(role == Role.ROLE_ADMIN){
+        // 관리자는 항상 잠금 해제
+        if (role == Role.ROLE_ADMIN) {
             return true;
         }
-        return userDetail == null || !userDetail.isBlocked();
+
+        // userDetail이 null이면 잠금 해제 (관리자 등)
+        if (userDetail == null) {
+            return true;
+        }
+
+        // LazyInitializationException 방지
+        try {
+            return !userDetail.isBlocked();
+        } catch (Exception e) {
+            // userDetail을 로드할 수 없는 경우 잠금 해제로 처리
+            return true;
+        }
     }
 
     @Override

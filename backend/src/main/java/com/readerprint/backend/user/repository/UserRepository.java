@@ -13,6 +13,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByUserId(String userId);
     boolean existsByNickname(String nickname);
 
+    Optional<User> findByUserId(String userId);
+
     @Query("SELECT u FROM User u LEFT JOIN FETCH u.userDetail WHERE u.userId = :userId")
     Optional<User> findByUserIdWithDetail(String userId);
 }
