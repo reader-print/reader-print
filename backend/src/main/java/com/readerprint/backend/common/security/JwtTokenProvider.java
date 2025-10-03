@@ -53,6 +53,11 @@ public class JwtTokenProvider {
       parseClaimsJws(token) -> parseSignedClaims(token)
     * */
     public String getUsernameFromToken(String token){
+
+        if(token == null || token.isEmpty()) {
+            return null; // JWT 없으면 null 반환
+        }
+
         Claims claims = Jwts.parser()
                 .verifyWith(getSigningKey())
                 .build()
@@ -63,6 +68,10 @@ public class JwtTokenProvider {
     }
 
     public boolean validateToken(String token){
+        if(token == null || token.isEmpty()) {
+            return false; // JWT 없으면 null 반환
+        }
+
         try{
             Jwts.parser()
                     .verifyWith(getSigningKey()) // 검증 키 설정

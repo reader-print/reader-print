@@ -15,7 +15,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-import static org.aspectj.weaver.tools.cache.SimpleCacheFactory.path;
 
 @Component
 @RequiredArgsConstructor
@@ -26,16 +25,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserDetailsService userDetailsService;
 
+    private static final String HEADER_AUTHORIZATION = "Authorization";
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String path = request.getRequestURI();
+        log.info("[JwtAuthenticationFilter] path : {}", path);
 
-        // Swagger, OpenAPI 문서 요청은 JWT 인증 없이 통과
-        if (path.startsWith("/swagger-ui") ||
-                path.startsWith("/v3/api-docs") ||
-                path.startsWith("/swagger-resources") ||
-                path.startsWith("/webjars") ||
-                path.startsWith("/swagger-config")) {
+        log.info("[JwtAuthenticationFilter][jwt 필터 시작]");
+
+        String authorizationHeader = request.getHeader(HEADER_AUTHORIZATION);
+        log.info("authorizationHeader : {}", authorizationHeader);
+
+        // 🔹 토큰이 없는 경우: 그냥 다음 필터로 넘김 (예외 던지지 말 것!)
+        if (authorizationHeader == null) {
             filterChain.doFilter(request, response);
             return;
         }
