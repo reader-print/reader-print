@@ -1,4 +1,4 @@
-package com.readerprint.backend.controller;
+package com.readerprint.backend.testController;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;

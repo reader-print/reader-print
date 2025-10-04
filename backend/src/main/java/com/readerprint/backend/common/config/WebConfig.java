@@ -1,4 +1,4 @@
-package com.readerprint.backend.config;
+package com.readerprint.backend.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
