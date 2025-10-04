@@ -37,8 +37,8 @@ public class SecurityConfig {
                                 "/swagger-ui.html",
                                 "/swagger-resources/**",
                                 "/webjars/**",
-                                "/api/v1/auth/**",
-                                "/api/test"
+                                "/api/v1/auth/**"
+                                //"/api/test"
 
                         ).permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/v1/auth/**").permitAll()

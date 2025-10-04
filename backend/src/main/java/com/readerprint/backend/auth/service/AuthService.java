@@ -18,7 +18,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -71,6 +70,7 @@ public class AuthService {
 
             // JWT 토큰 생성
             String accessToken = jwtTokenProvider.generateToken(savedUser);
+            String refreshToken = jwtTokenProvider.generateRefreshToken(savedUser);
 
             return AuthResponse.success(
                     savedUser.getUserId(),
@@ -78,6 +78,7 @@ public class AuthService {
                     savedUser.getNickname(),
                     savedUser.getRole(),
                     accessToken,
+                    refreshToken,
                     null, // 회원가입 시 블락정보 없음
                     "회원가입이 성공적으로 완료되었습니다."
             );
@@ -114,6 +115,7 @@ public class AuthService {
 
             // JWT 토큰 생성
             String accessToken = jwtTokenProvider.generateToken(user);
+            String refreshToken = jwtTokenProvider.generateRefreshToken(user);
 
             log.info("로그인 성공: userId={}, role={}", user.getUserId(), user.getRole());
 
@@ -123,6 +125,7 @@ public class AuthService {
                     user.getNickname(),
                     user.getRole(),
                     accessToken,
+                    refreshToken,
                     user.getRole() == Role.ROLE_USER && user.getUserDetail() != null ?
                             user.getUserDetail().getBlockedUntil() : null,
                     "로그인이 성공적으로 완료되었습니다."
@@ -132,6 +135,50 @@ public class AuthService {
             log.error("로그인 실패: userId={}, error={}", request.getUserId(), e.getMessage());
             throw e;
         }
+    }
+
+    // refreshToken으로 매 AccessToken 발급하기
+    public AuthResponse refresh (String refreshToken){
+        log.info("토큰 갱신 시도");
+
+        //1) refreshToken 검증
+        if(!jwtTokenProvider.validateToken(refreshToken)){
+            throw new IllegalArgumentException("유효하지 않거나 만료된 리프레시 토큰입니다.");
+        }
+        //2) refresh 타입인지 확인
+        if(!"refresh".equals(jwtTokenProvider.getTokenType(refreshToken))){
+            throw new IllegalArgumentException("리프레시 토큰 타입이 아닙니다");
+        }
+        //3) 사용자 정보 조회
+        String userId = jwtTokenProvider.getUsernameFromToken(refreshToken);
+        User user = userRepository.findByUserIdWithDetail(userId)
+                .orElseThrow(()-> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다."));
+
+        //4) 계정 블락 체크
+        if(user.isBlocked()){
+            throw new IllegalArgumentException(
+                    "계정이 " + user.getUserDetail().getBlockedUntil() + "까지 제한되었습니다."
+            );
+        }
+        //5) UserDetails 생성  --> 그냥 위에 user로 쓰면 안되나
+        //6) 새 accessToken 발급
+        String newAccessToken = jwtTokenProvider.generateAccessToken(user);
+
+        log.info("\uD83E\uDD1F\uD83C\uDFFB 토큰 갱신 성공 : userId = {} ", userId);
+
+        return AuthResponse.success(
+                user.getUserId(),
+                user.getEmail(),
+                user.getNickname(),
+                user.getRole(),
+                newAccessToken,
+                refreshToken,
+                user.getRole() == Role.ROLE_USER && user.getUserDetail()!= null?
+                        user.getUserDetail().getBlockedUntil() : null,
+                "토큰이 갱신되었습니다."
+
+        );
+
     }
 
 

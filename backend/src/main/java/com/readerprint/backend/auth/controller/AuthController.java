@@ -2,6 +2,7 @@ package com.readerprint.backend.auth.controller;
 
 import com.readerprint.backend.auth.dto.AuthResponse;
 import com.readerprint.backend.auth.dto.LoginRequest;
+import com.readerprint.backend.auth.dto.RefreshRequest;
 import com.readerprint.backend.auth.dto.SignupRequest;
 import com.readerprint.backend.auth.service.AuthService;
 import jakarta.validation.Valid;
@@ -49,6 +50,26 @@ public class AuthController {
             log.error("로그인 오류", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(AuthResponse.failure("로그인 처리 중 오류가 발생했습니다."));
+        }
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthResponse> refresh(@Valid @RequestBody RefreshRequest request){
+        try{
+            AuthResponse response = authService.refresh(request.getRefreshToken());
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e){
+            log.warn("토큰 갱신 실패 : {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(AuthResponse.failure(e.getMessage()));
+        } catch (IllegalStateException e){
+            log.warn("블락 계정의 토큰 갱신 시도 : {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(AuthResponse.failure(e.getMessage()));
+        } catch (Exception e){
+            log.error("토큰 갱신 오류 ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(AuthResponse.failure("토큰 갱신 중 오류가 발생했습니다"));
         }
     }
 

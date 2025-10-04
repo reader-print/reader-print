@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 @Getter
 @Setter
 public class JwtProperties {
-    private String secret = "readerPrintSecretzxdfdfqwedsfasdfsda";
-    private long expiration = 86400000; //24시간
+    private String secret;
+    private long expiration;
+    private long refreshExpiration;
 }
