@@ -3,6 +3,8 @@ package com.readerprint.backend.auth.service;
 import com.readerprint.backend.auth.dto.AuthResponse;
 import com.readerprint.backend.auth.dto.LoginRequest;
 import com.readerprint.backend.auth.dto.SignupRequest;
+import com.readerprint.backend.common.error.ErrorCode;
+import com.readerprint.backend.common.error.exception.BadRequestException;
 import com.readerprint.backend.common.security.JwtTokenProvider;
 import com.readerprint.backend.user.entity.Role;
 import com.readerprint.backend.user.entity.User;
@@ -15,6 +17,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -35,7 +38,6 @@ public class AuthService {
 
     public AuthResponse signup(SignupRequest request){
         log.info("회원가입 시도 : userId={}, nickname={} ", request.getUserId(), request.getNickname());
-
 
         // 중복 체크
         validateDuplicateUser(request);
@@ -85,7 +87,7 @@ public class AuthService {
 
         } catch (Exception e) {
             log.error("회원가입 실패: userId={}, error={}", request.getUserId(), e.getMessage());
-            throw new IllegalStateException("회원가입 처리 중 오류가 발생했습니다.");
+            throw new BadRequestException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
 
 
@@ -103,14 +105,13 @@ public class AuthService {
 
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             User user = userRepository.findByUserIdWithDetail(userDetails.getUsername())
-                    .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+                    .orElseThrow(() -> new BadRequestException(ErrorCode.USER_NOT_FOUND));
 
             // 블락 상태 체크 (일반 사용자만)
             if (user.isBlocked()) {
                 log.warn("블락된 사용자 로그인 시도: userId={}, blockedUntil={}",
                         user.getUserId(), user.getUserDetail().getBlockedUntil());
-                throw new IllegalStateException(
-                        "계정이 " + user.getUserDetail().getBlockedUntil() + "까지 제한되었습니다.");
+                throw new BadRequestException(ErrorCode.USER_BLOCKED);
             }
 
             // JWT 토큰 생성
@@ -131,9 +132,9 @@ public class AuthService {
                     "로그인이 성공적으로 완료되었습니다."
             );
 
-        } catch (Exception e) {
+        } catch (BadCredentialsException e) {
             log.error("로그인 실패: userId={}, error={}", request.getUserId(), e.getMessage());
-            throw e;
+            throw new BadRequestException(ErrorCode.INVALID_CREDENTIALS);
         }
     }
 
@@ -143,22 +144,20 @@ public class AuthService {
 
         //1) refreshToken 검증
         if(!jwtTokenProvider.validateToken(refreshToken)){
-            throw new IllegalArgumentException("유효하지 않거나 만료된 리프레시 토큰입니다.");
+            throw new BadRequestException(ErrorCode.INVALID_TOKEN);
         }
         //2) refresh 타입인지 확인
         if(!"refresh".equals(jwtTokenProvider.getTokenType(refreshToken))){
-            throw new IllegalArgumentException("리프레시 토큰 타입이 아닙니다");
+            throw new BadRequestException(ErrorCode.WRONG_TYPE_TOKEN);
         }
         //3) 사용자 정보 조회
         String userId = jwtTokenProvider.getUsernameFromToken(refreshToken);
         User user = userRepository.findByUserIdWithDetail(userId)
-                .orElseThrow(()-> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다."));
+                .orElseThrow(()-> new BadRequestException(ErrorCode.USER_NOT_FOUND));
 
         //4) 계정 블락 체크
         if(user.isBlocked()){
-            throw new IllegalArgumentException(
-                    "계정이 " + user.getUserDetail().getBlockedUntil() + "까지 제한되었습니다."
-            );
+            throw new BadRequestException(ErrorCode.USER_BLOCKED);
         }
         //5) UserDetails 생성  --> 그냥 위에 user로 쓰면 안되나
         //6) 새 accessToken 발급
@@ -181,15 +180,13 @@ public class AuthService {
 
     }
 
-
-
     private void validateDuplicateUser(SignupRequest request) {
         if (userRepository.existsByUserId(request.getUserId())) {
-            throw new IllegalArgumentException("이미 사용중인 아이디입니다.");
+            throw new BadRequestException(ErrorCode.DUPLICATE_USER_ID);
         }
 
         if (userRepository.existsByNickname(request.getNickname())) {
-            throw new IllegalArgumentException("이미 사용중인 닉네임입니다.");
+            throw new BadRequestException(ErrorCode.DUPLICATE_NICKNAME);
         }
     }
 

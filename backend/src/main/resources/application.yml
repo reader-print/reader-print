@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: readerprint-backend
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: myuser
+    url: jdbc:mysql://localhost:3306/myapp?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true&useSSL=false
+    password: mypass
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+jwt:
+  secret: 3YinZSAuNUWlIKhiIh7Lo0EZwWZspLv0
+  expiration: '1800000'
+  refresh-expiration: '604800000'
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: INFO
+    p6spy: INFO

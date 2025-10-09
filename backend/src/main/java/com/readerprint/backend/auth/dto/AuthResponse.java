@@ -22,7 +22,6 @@ public class AuthResponse {
     private LocalDateTime blockedUntil;  // 일반 사용자만 - 블락 정보
     private String message;
 
-    // 성공 응답용 생성자
     public static AuthResponse success(String userId, String email, String nickname,
                                        Role role, String accessToken, String refreshToken, LocalDateTime blockedUntil, String message) {
         return AuthResponse.builder()
@@ -33,13 +32,6 @@ public class AuthResponse {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .blockedUntil(blockedUntil)
-                .message(message)
-                .build();
-    }
-
-    // 실패 응답용 생성자
-    public static AuthResponse failure(String message) {
-        return AuthResponse.builder()
                 .message(message)
                 .build();
     }

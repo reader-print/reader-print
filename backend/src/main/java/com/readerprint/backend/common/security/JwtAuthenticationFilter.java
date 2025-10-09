@@ -32,10 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         log.info("[JwtAuthenticationFilter] path : {}", path);
 
-        log.info("[JwtAuthenticationFilter][jwt 필터 시작]");
-
         String authorizationHeader = request.getHeader(HEADER_AUTHORIZATION);
-        log.info("authorizationHeader : {}", authorizationHeader);
 
         //  토큰이 없는 경우: 그냥 다음 필터로 넘김 (예외 던지지 말 것)
         if (authorizationHeader == null) {
