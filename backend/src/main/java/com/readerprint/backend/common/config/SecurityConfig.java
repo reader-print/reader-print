@@ -46,8 +46,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         // 사용자 권한 필요
                         .requestMatchers("/api/v1/users/**").hasRole("USER")
-                        // 공통 API (책 목록 등)
-                        .requestMatchers("/api/v1/books").authenticated()
+                        // 공통 API (책 검색은 누구나, 책 등록은 로그인 필요)
+                        .requestMatchers(HttpMethod.GET, "/api/v1/books").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/books").authenticated()
                         // 나머지는 인증 필요
                         .anyRequest().authenticated()
                 )

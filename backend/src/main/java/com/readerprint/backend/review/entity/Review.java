@@ -3,9 +3,11 @@ package com.readerprint.backend.review.entity;
 import com.readerprint.backend.book.entity.Book;
 import com.readerprint.backend.user.entity.User;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -16,6 +18,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "review")
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 public class Review {
@@ -56,4 +59,10 @@ public class Review {
 
     @Column(name = "reading_end_date")
     private LocalDate readingEndDate;
+
+    public void update(String content, LocalDate readingStartDate, LocalDate readingEndDate) {
+        this.content = content;
+        this.readingStartDate = readingStartDate;
+        this.readingEndDate = readingEndDate;
+    }
 }

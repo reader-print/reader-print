@@ -2,17 +2,16 @@ package com.readerprint.backend.rating.entity;
 
 import com.readerprint.backend.review.entity.Review;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "rating_score")
 @Getter
-@Setter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class RatingScore {
 
     @EmbeddedId

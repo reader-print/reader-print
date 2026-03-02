@@ -32,10 +32,6 @@ public class P6SpyFormatter extends JdbcEventListener implements MessageFormatti
 
         if (StringUtils.hasText(sql)) {
             String formattedSql = format(sql);
-
-            if (!"prod".equals(System.getProperty("spring.profiles.active"))) {
-                formattedSql = highlight(formattedSql);
-            }
             sb.append(formattedSql);
         }
         return sb.toString();

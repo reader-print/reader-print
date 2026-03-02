@@ -21,3 +21,10 @@ logging:
       hibernate:
         SQL: INFO
     p6spy: INFO
+
+
+# 국립중앙도서관
+nl:
+  api:
+    base-url: https://www.nl.go.kr/NL/search/openApi/search.do
+    key: bf2cda60113124bef54058dcd457633a346166d5a08aad19d4d633621941fdba
