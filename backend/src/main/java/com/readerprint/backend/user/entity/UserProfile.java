@@ -29,7 +29,7 @@ public class UserProfile {
     @JoinColumn(name = "user_seq")
     private User user;
 
-    @Column(name = "bid")
+    @Column(name = "bio")
     private String bio;
 
     @Column(name = "profile_image")
