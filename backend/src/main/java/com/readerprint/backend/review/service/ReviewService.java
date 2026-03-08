@@ -1,6 +1,7 @@
 package com.readerprint.backend.review.service;
 
 import com.readerprint.backend.book.entity.Book;
+import org.springframework.lang.Nullable;
 import com.readerprint.backend.book.repository.BookRepository;
 import com.readerprint.backend.common.error.ErrorCode;
 import com.readerprint.backend.common.error.exception.BadRequestException;
@@ -33,7 +34,7 @@ public class ReviewService {
     private final RatingCriteriaRepository ratingCriteriaRepository;
     private final RatingScoreRepository ratingScoreRepository;
 
-    public List<ReviewResponse> getMyReviews(LocalDate startDate, LocalDate endDate, Long userSeq) {
+    public List<ReviewResponse> getMyReviews(@Nullable LocalDate startDate, @Nullable LocalDate endDate, Long userSeq) {
         return reviewRepository.findReviewByUser(userSeq, startDate, endDate);
     }
 

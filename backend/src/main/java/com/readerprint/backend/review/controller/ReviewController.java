@@ -20,16 +20,26 @@ import java.util.List;
 @Tag(name = "사용자 리뷰")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/users/my/reviews")
+@RequestMapping("/api/v1/users/my")
 public class ReviewController {
 
     private final ReviewService reviewService;
 
+    @Operation(summary = "읽은 책 목록 조회")
+    @GetMapping("/books")
+    public ApiResponse<List<ReviewResponse>> getMyBooks(
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
+            @AuthenticationPrincipal User user
+    ) {
+        return ApiResponse.ok(reviewService.getMyReviews(startDate, endDate, user.getSeq()));
+    }
+
     @Operation(summary = "리뷰 목록 조회")
-    @GetMapping
+    @GetMapping("/reviews")
     public ApiResponse<List<ReviewResponse>> getMyReviews(
-            @RequestParam LocalDate startDate,
-            @RequestParam LocalDate endDate,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
             @AuthenticationPrincipal User user
     ) {
         return ApiResponse.ok(reviewService.getMyReviews(startDate, endDate, user.getSeq()));
@@ -37,7 +47,7 @@ public class ReviewController {
 
     @Operation(summary = "리뷰 등록")
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping
+    @PostMapping("/reviews")
     public ApiResponse<ReviewCreateResponse> createReview(
             @Valid @RequestBody ReviewRequest request,
             @AuthenticationPrincipal User user
@@ -46,7 +56,7 @@ public class ReviewController {
     }
 
     @Operation(summary = "리뷰 수정")
-    @PutMapping("/{reviewId}")
+    @PutMapping("/reviews/{reviewId}")
     public ApiResponse<ReviewCreateResponse> updateReview(
             @PathVariable Long reviewId,
             @Valid @RequestBody ReviewRequest request,

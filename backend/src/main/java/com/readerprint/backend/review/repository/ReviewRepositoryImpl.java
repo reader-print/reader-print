@@ -40,8 +40,8 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
                 .leftJoin(review.book, book)
                 .where(
                         review.user.seq.eq(userSeq),
-                        review.readingStartDate.goe(startDate),
-                        review.readingEndDate.loe(endDate)
+                        startDate != null ? review.readingStartDate.goe(startDate) : null,
+                        endDate != null ? review.readingEndDate.loe(endDate) : null
                 )
                 .fetch();
 
