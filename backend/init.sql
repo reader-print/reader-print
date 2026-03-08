@@ -78,6 +78,7 @@ CREATE TABLE rating_criteria (
   criteria_id BIGINT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(50) NOT NULL,
   description VARCHAR(200),
+  is_activate BOOLEAN DEFAULT TRUE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -214,12 +215,12 @@ INSERT INTO user_tag (user_seq, tag_id) VALUES
 (1, 5);
 
 -- 별점 기준 샘플 데이터
-INSERT INTO rating_criteria (name, description) VALUES
-('스토리', '이야기 전개와 구성'),
-('문체', '글쓰기 스타일과 표현력'),
-('몰입도', '책에 빠져드는 정도'),
-('재독 의향', '다시 읽고 싶은 정도'),
-('추천도', '다른 사람에게 권하고 싶은 정도');
+INSERT INTO rating_criteria (name, description, is_activate) VALUES
+('스토리', '이야기 전개와 구성', TRUE),
+('문체', '글쓰기 스타일과 표현력', TRUE),
+('몰입도', '책에 빠져드는 정도', TRUE),
+('재독 의향', '다시 읽고 싶은 정도', TRUE),
+('추천도', '다른 사람에게 권하고 싶은 정도', TRUE);
 
 -- 사용자-별점 기준 관계
 INSERT INTO user_rating_criteria (user_seq, criteria_id) VALUES

@@ -38,7 +38,7 @@ public class ReviewService {
     }
 
     @Transactional
-    public ReviewCreateResponse createReview(ReviewRequest request, User user) {
+    public ReviewCreateResponse createReview(ReviewRequest request, User user){
         Book book = bookRepository.findById(request.bookId())
                 .orElseThrow(() -> new BadRequestException(ErrorCode.BOOK_NOT_FOUND));
 
