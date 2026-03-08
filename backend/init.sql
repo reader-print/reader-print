@@ -255,7 +255,7 @@ INSERT INTO rating_score (review_id, criteria_id, score) VALUES
 
 -- 문의 샘플 데이터
 INSERT INTO inquiry (user_seq, title, content, type, status) VALUES
-(1, '책 등록이 안됩니다', 'ISBN 검색이 되지 않는데 수동으로 등록할 수 있나요?', '기능문의', '대기');
+(1, '책 등록이 안됩니다', 'ISBN 검색이 되지 않는데 수동으로 등록할 수 있나요?', '기능문의', 'WAITING');
 
 -- ===============================================
 -- 초기화 완료 메시지
