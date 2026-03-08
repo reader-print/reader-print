@@ -39,8 +39,14 @@ public class ReviewService {
 
     @Transactional
     public ReviewCreateResponse createReview(ReviewRequest request, User user){
-        Book book = bookRepository.findById(request.bookId())
-                .orElseThrow(() -> new BadRequestException(ErrorCode.BOOK_NOT_FOUND));
+        Book book = bookRepository.findByIsbn(request.isbn())
+                .orElseGet(() -> bookRepository.save(Book.builder()
+                        .isbn(request.isbn())
+                        .title(request.title())
+                        .author(request.author())
+                        .publisher(request.publisher())
+                        .genre(request.genre())
+                        .build()));
 
         if (reviewRepository.existsByUserAndBook(user, book)) {
             throw new BadRequestException(ErrorCode.REVIEW_ALREADY_EXISTS);
