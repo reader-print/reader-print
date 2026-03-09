@@ -38,6 +38,9 @@ public enum ErrorCode {
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "리뷰를 찾을 수 없습니다."),
     REVIEW_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 해당 책에 대한 리뷰가 존재합니다."),
 
+    // 문의
+    INQUIRY_NOT_FOUND(HttpStatus.NOT_FOUND, "문의를 찾을 수 없습니다."),
+
     // 별점 기준
     CRITERIA_NOT_FOUND(HttpStatus.NOT_FOUND, "별점 기준을 찾을 수 없습니다."),
     CRITERIA_DUPLICATE(HttpStatus.CONFLICT, "이미 존재하는 별점 기준 이름입니다.");

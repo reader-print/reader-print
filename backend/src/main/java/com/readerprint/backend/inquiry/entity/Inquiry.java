@@ -42,6 +42,11 @@ public class Inquiry {
     @Column(columnDefinition = "TEXT")
     private String answer;
 
+    public void answer(String answer) {
+        this.answer = answer;
+        this.status = InquiryStatus.COMPLETED;
+    }
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
